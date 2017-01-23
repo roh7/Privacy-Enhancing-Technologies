@@ -338,11 +338,13 @@ def dh_decrypt(priv, ciphertext):
 #  What is your test coverage? Where is it missing cases?
 #  $ py.test-2.7 --cov-report html --cov Lab01Code Lab01Code.py
 
+
 test_G, test_priv_key, test_pub_key = dh_get_key()
+
 
 def test_encrypt():
     message = u"i_need_about" * 350
-    ciphertext = dh_encrypt(test_pub_key, message)
+    dh_encrypt(test_pub_key, message)
     assert True
 
 
@@ -353,7 +355,23 @@ def test_decrypt():
 
 
 def test_fails():
-    assert False
+    message = u"i_need_about" * 350
+    orig_ciphertext = dh_encrypt(test_pub_key, message)
+    iv, cipher, tag, pub_key = orig_ciphertext
+
+    shared_key = pub_key.pt_mul(test_priv_key)
+    hashed_key = sha256(shared_key.export()).digest()
+    msg_encoded = message.encode("utf8")
+
+    aes_gcm = Cipher.aes_128_gcm()
+    enc_operation = aes_gcm.enc(hashed_key[:16], iv)
+    enc_operation.update(msg_encoded)
+    enc_operation.finalize()
+
+    if tag == enc_operation.get_tag(16):
+        assert dh_decrypt(test_priv_key, orig_ciphertext) == msg_encoded
+    else:
+        assert False
 
 #####################################################
 # TASK 6 -- Time EC scalar multiplication
@@ -367,4 +385,3 @@ def test_fails():
 
 def time_scalar_mul():
     pass
-
