@@ -58,7 +58,11 @@ def decrypt_message(K, iv, ciphertext, tag):
     Decrypt a cipher text under a key K
     In case the decryption fails, throw an exception.
     """
-    plain = aes.quick_gcm_dec(K, iv, ciphertext, tag)
+    try:
+        plain = aes.quick_gcm_dec(K, iv, ciphertext, tag)
+    except:
+        raise Exception("decryption failed")
+    
     return plain.encode("utf8")
 
 
