@@ -62,7 +62,7 @@ def decrypt_message(K, iv, ciphertext, tag):
         plain = aes.quick_gcm_dec(K, iv, ciphertext, tag)
     except:
         raise Exception("decryption failed")
-    
+
     return plain.encode("utf8")
 
 
@@ -131,19 +131,14 @@ def point_add(a, b, p, x0, y0, x1, y1):
     yqminyp = y1.mod_sub(y0, p)
 
     xqminxpmodinv = xqminxp.mod_inverse(m=p)
-
-    # raise Exception(type(xqminxpmodinv))
-
     lam = xqminxpmodinv.mod_mul(yqminyp, p)
 
     # calculate xr
-
     lamsq = lam.mod_mul(lam, p)
     lamsqmin = lamsq.mod_sub(x0, p)
     xr = lamsqmin.mod_sub(x1, p)
 
     # calculate yr
-
     xpminxr = x0.mod_sub(xr, p)
     lamxpxr = lam.mod_mul(xpminxr, p)
     yr = lamxpxr.mod_sub(y0, p)
@@ -195,7 +190,6 @@ def point_scalar_multiplication_double_and_add(a, b, p, x, y, scalar):
                 Q = Q + P
             P = 2 * P
         return Q
-
     """
     Q = (None, None)
     P = (x, y)
@@ -226,7 +220,6 @@ def point_scalar_multiplication_montgomerry_ladder(a, b, p, x, y, scalar):
                 R0 = R0 + R1
                 R1 = 2 R1
         return R0
-
     """
     R0 = (None, None)
     R1 = (x, y)
@@ -287,7 +280,7 @@ def ecdsa_verify(G, pub_verify, message, sig):
 #    - use Bob's public key to derive a shared key.
 #    - Use Bob's public key to encrypt a message.
 #    - Use Bob's private key to decrypt the message.
-# Status: TODO
+# Status: DONE
 
 
 def dh_get_key():
@@ -347,18 +340,26 @@ test_G, test_priv_key, test_pub_key = dh_get_key()
 
 
 def test_encrypt():
+    """ Encrypts a message using the generated public key """
     message = u"i_need_about" * 350
     dh_encrypt(test_pub_key, message)
     assert True
 
 
 def test_decrypt():
+    """
+    Decrypts the message using the generated private key
+    Compares the decrypted message to the original message
+    """
     message = u"i_need_about" * 350
     ciphertext = dh_encrypt(test_pub_key, message)
     assert dh_decrypt(test_priv_key, ciphertext) == message
 
 
 def test_fails():
+    """
+    Attempts to decrypt the message only if the tags are valid
+    """
     message = u"i_need_about" * 350
     orig_ciphertext = dh_encrypt(test_pub_key, message)
     iv, cipher, tag, pub_key = orig_ciphertext
@@ -385,7 +386,9 @@ def test_fails():
 #       scalar sizes)
 #    - Print reports on timing dependencies on secrets.
 #    - Fix one implementation to not leak information.
+# Status: NO
 
 
 def time_scalar_mul():
     pass
+
