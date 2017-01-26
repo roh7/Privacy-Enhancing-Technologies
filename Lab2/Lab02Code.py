@@ -7,7 +7,7 @@
 # $ py.test-2.7 -v Lab02Tests.py
 
 #####################################################
-# Group Members: Rohan Kopparapu, Jazib Mahboob
+# Group Members: Rohan Kopparapu, <TODO partner_name>
 #####################################################
 
 #####################################################
@@ -156,7 +156,7 @@ def mix_client_one_hop(public_key, address, message):
 #####################################################
 # TASK 3 -- Build a n-hop mix client.
 #           Mixes are in a fixed cascade.
-#
+# Status: TODO
 
 
 # This is the type of messages destined for the n-hop mix
@@ -291,6 +291,7 @@ def mix_client_n_hop(public_keys, address, message):
 #           Given a set of anonymized traces
 #           the objective is to output an ordered list
 #           of likely `friends` of a target user.
+# Status: TODO
 
 
 def generate_trace(number_of_users, threshold_size, number_of_rounds,
@@ -333,4 +334,27 @@ def analyze_trace(trace, target_number_of_friends, target=0):
     # ADD CODE HERE
 
     return []
+
+#####################################################
+# TASK Q1 (Question 1):
+#   The mix packet format you worked on uses AES-CTR
+#       with an IV set to all zeros.
+#   Explain whether this is a security concern and justify
+#       your answer.
+# Status: TODO
+
+
+""" TODO: Your answer HERE """
+
+#####################################################
+# TASK Q2 (Question 2):
+# What assumptions does your implementation of the
+#   Statistical Disclosure Attack makes about the
+#   distribution of traffic from non-target senders
+#   to receivers?
+# Is the correctness of the result returned dependent
+#   on this background distribution?
+
+
+""" TODO: Your answer HERE """
 
