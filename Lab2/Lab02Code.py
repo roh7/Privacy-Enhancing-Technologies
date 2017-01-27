@@ -7,7 +7,7 @@
 # $ py.test-2.7 -v Lab02Tests.py
 
 #####################################################
-# Group Members: Rohan Kopparapu, <TODO partner_name>
+# Group Members: Rohan Kopparapu, Diana Lee
 #####################################################
 
 #####################################################
@@ -149,6 +149,19 @@ def mix_client_one_hop(public_key, address, message):
     client_public_key = private_key * G.generator()
 
     # ADD CODE HERE
+    # generate shared key and export
+    # get hmac, address and message keys
+    # encode both address and message plaintexts
+    # get expected mac
+    # ???
+    # profit
+
+    address_cipher = None
+    message_cipher = None
+
+    expected_mac = None
+
+    pass
 
     return OneHopMixMessage(client_public_key, expected_mac,
                             address_cipher, message_cipher)
