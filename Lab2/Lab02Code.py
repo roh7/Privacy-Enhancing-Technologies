@@ -42,7 +42,7 @@ aes = Cipher("AES-128-CTR")
 #####################################################
 # TASK 2 -- Build a simple 1-hop mix client.
 #
-# Status: TODO
+# Status: DONE
 
 def aes_ctr_enc_dec(key, iv, input):
     """
@@ -148,20 +148,25 @@ def mix_client_one_hop(public_key, address, message):
     private_key = G.order().random()
     client_public_key = private_key * G.generator()
 
-    # ADD CODE HERE
     # generate shared key and export
+    shared_element = public_key.pt_mul(private_key)
+    key_material = sha512(shared_element.export()).digest()
+
     # get hmac, address and message keys
+    hmac_key = key_material[:16]
+    address_key = key_material[16:32]
+    message_key = key_material[32:48]
+
     # encode both address and message plaintexts
-    # get expected mac
-    # ???
-    # profit
+    iv = b"\x00" * 16
+    address_cipher = aes_ctr_enc_dec(address_key, iv, address_plaintext)
+    message_cipher = aes_ctr_enc_dec(message_key, iv, message_plaintext)
 
-    address_cipher = None
-    message_cipher = None
-
-    expected_mac = None
-
-    pass
+    # check the hmac and get expected mac
+    h = Hmac(b"sha512", hmac_key)
+    h.update(address_cipher)
+    h.update(message_cipher)
+    expected_mac = (h.digest())[:20]
 
     return OneHopMixMessage(client_public_key, expected_mac,
                             address_cipher, message_cipher)
