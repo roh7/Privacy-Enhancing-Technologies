@@ -83,11 +83,11 @@ def mix_server_one_hop(private_key, message_list):
     for msg in message_list:
 
         # Check elements and lengths
-        if not G.check_point(msg.ec_public_key) or \
-               not len(msg.hmac) == 20 or \
-               not len(msg.address) == 258 or \
-               not len(msg.message) == 1002:
-           raise Exception("Malformed input message")
+        if (not G.check_point(msg.ec_public_key) or
+                not len(msg.hmac) == 20 or
+                not len(msg.address) == 258 or
+                not len(msg.message) == 1002):
+            raise Exception("Malformed input message")
 
         # First get a shared key
         shared_element = private_key * msg.ec_public_key
@@ -206,12 +206,12 @@ def mix_server_n_hop(private_key, message_list, final=False):
     for msg in message_list:
 
         # Check elements and lengths
-        if not G.check_point(msg.ec_public_key) or \
-               not isinstance(msg.hmacs, list) or \
-               not len(msg.hmacs[0]) == 20 or \
-               not len(msg.address) == 258 or \
-               not len(msg.message) == 1002:
-           raise Exception("Malformed input message")
+        if (not G.check_point(msg.ec_public_key) or
+                not isinstance(msg.hmacs, list) or
+                not len(msg.hmacs[0]) == 20 or
+                not len(msg.address) == 258 or
+                not len(msg.message) == 1002):
+            raise Exception("Malformed input message")
 
         # First get a shared key
         shared_element = private_key * msg.ec_public_key
@@ -300,6 +300,9 @@ def mix_client_n_hop(public_keys, address, message):
     client_public_key = private_key * G.generator()
 
     # ADD CODE HERE
+    hmacs = None
+    address_cipher = None
+    message_cipher = None
 
     return NHopMixMessage(client_public_key, hmacs,
                           address_cipher, message_cipher)
@@ -345,7 +348,7 @@ def generate_trace(number_of_users, threshold_size, number_of_rounds,
 def analyze_trace(trace, target_number_of_friends, target=0):
     """
     Given a trace of traffic, and a given number of friends,
-    return the list of receiver identifiers that are the mos
+    return the list of receiver identifiers that are the most
     likely friends of the target.
     """
 

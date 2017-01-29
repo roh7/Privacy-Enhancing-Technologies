@@ -89,7 +89,8 @@ def is_point_on_curve(a, b, p, x, y):
     assert isinstance(a, Bn)
     assert isinstance(b, Bn)
     assert isinstance(p, Bn) and p > 0
-    assert (isinstance(x, Bn) and isinstance(y, Bn)) or (x is None and y is None)
+    assert (isinstance(x, Bn) and
+            isinstance(y, Bn)) or (x is None and y is None)
 
     if x is None and y is None:
         return True
@@ -117,7 +118,9 @@ def point_add(a, b, p, x0, y0, x1, y1):
         raise Exception('EC Points must not be equal')
 
     # if x1 == x0 then there is no inverse, also check both points are on curve
-    if (x0 == x1) or (not is_point_on_curve(a, b, p, x0, y0)) or (not is_point_on_curve(a, b, p, x1, y1)):
+    if ((x0 == x1) or
+            (not is_point_on_curve(a, b, p, x0, y0)) or
+            (not is_point_on_curve(a, b, p, x1, y1))):
         return(None, None)
 
     if (x0, y0) == (None, None):
