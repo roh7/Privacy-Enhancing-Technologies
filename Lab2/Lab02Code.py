@@ -299,10 +299,67 @@ def mix_client_n_hop(public_keys, address, message):
     private_key = G.order().random()
     client_public_key = private_key * G.generator()
 
-    # ADD CODE HERE
-    hmacs = None
+    # initialise ciphers
     address_cipher = None
     message_cipher = None
+
+    # initalise hmac and blinding key list with first public_key
+    # set blinding factor to 1
+    hmacs = []
+    blinding_keys = [public_keys[0]]
+    blinding_factor = Bn(1)
+
+    for i in range(1, len(public_keys)):
+        # generate shared key and export
+        shared_element = private_key * blinding_keys[-1]
+        key_material = sha512(shared_element.export()).digest()
+
+        # generate another blinding factor
+        blinding_factor *= Bn.from_binary(key_material[48:])
+
+        # append the calculated blinding key to list
+        public_key = public_keys[1]
+        blinding_keys += [blinding_factor * public_key]
+
+    # reverse list and traverse each hop using blinding factors
+    blinding_keys = reversed(blinding_keys)
+    for bk in blinding_keys:
+        # generate shared key and export
+        shared_element = private_key * bk
+        key_material = sha512(shared_element.export()).digest()
+
+        # get hmac, address and message keys
+        hmac_key = key_material[:16]
+        address_key = key_material[16:32]
+        message_key = key_material[32:48]
+
+        # encode both address and message plaintexts
+        iv = b"\x00" * 16
+        address_cipher = aes_ctr_enc_dec(address_key, iv, address_plaintext)
+        message_cipher = aes_ctr_enc_dec(message_key, iv, message_plaintext)
+
+        # intiialise a temporary Hmac and list of hmacs
+        h = Hmac(b"sha512", hmac_key)
+        temp_hmacs = []
+
+        for i in range(len(hmacs)):
+            prev_mac = hmacs[i]
+            # use a different iv fpr each hmac
+            iv = pack("H14s", i, b"\x00" * 14)
+
+            # encode hmac plaintext and add to temp list
+            hmac_plaintext = aes_ctr_enc_dec(hmac_key, iv, prev_mac)
+            h.update(hmac_plaintext)
+            temp_hmacs += [hmac_plaintext]
+
+        h.update(address_cipher)
+        h.update(message_cipher)
+
+        # check the hmac and prepend expected mac to temp list
+        expected_mac = h.digest()[:20]
+        temp_hmacs = [expected_mac] + temp_hmacs
+
+        hmacs = temp_hmacs
 
     return NHopMixMessage(client_public_key, hmacs,
                           address_cipher, message_cipher)
