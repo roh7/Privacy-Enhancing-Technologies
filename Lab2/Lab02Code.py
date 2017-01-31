@@ -17,7 +17,8 @@ from collections import namedtuple
 from hashlib import sha512
 from struct import pack, unpack
 from binascii import hexlify
-from pprint import pprint as pp
+from pprint import pprint
+from copy import copy
 # T2
 from petlib.ec import EcGroup
 from petlib.hmac import Hmac, secure_compare
@@ -31,7 +32,17 @@ from collections import Counter
 #####################################################
 # GLOBALS
 aes = Cipher("AES-128-CTR")
+to_print = True
 
+
+def my_print(obj, pretty=False):
+    if not to_print:
+        return
+
+    if pretty:
+        pprint(obj)
+    else:
+        print(obj)
 
 #####################################################
 # TASK 1 -- Ensure petlib is installed on the System
@@ -407,15 +418,52 @@ def analyze_trace(trace, target_number_of_friends, target=0):
     return the list of receiver identifiers that are the most
     likely friends of the target.
     """
+    # Counter for when target is in senders list
+    receivers_target = Counter()
 
-    # PLAN:
-    #   Trace when target user (Alice) is in senders list
-    #   Trace when Alice isn't in the senders list
-    #   Check difference in counts for each receiver
+    # Counter for when Alice isn't in the senders list
+    receivers_not_target = Counter()
+
+    # Counter to check difference in counts for each receiver
+    diff_receivers = Counter()
+
+# POOP
+
+    # Make a shallow copy of the trace
+    c_trace = copy(trace)
+    my_print({"equals": (c_trace == trace), "is": (c_trace is trace)})
+
+    # Count when the receiver was referenced
+    for trace in c_trace:
+        senders, receivers = trace
+        if target in senders:
+            for r in receivers:
+                receivers_target[r] += 1
+        else:
+            for r in receivers:
+                receivers_not_target[r] += 1
+
+    # Process receiver counters
+    receivers_target_list = list(receivers_target)
+    for r in receivers_target_list:
+        data = {"receiver": r,
+                "target count": receivers_target[r],
+                "non target count": receivers_not_target[r]}
+        my_print(data, pretty=True)
+        diff_receivers[r] = receivers_target[r] - receivers_not_target[r]
+
+    # Construct list for results and target's most common friends
+    results = []
+    target_common = list(diff_receivers.most_common(target_number_of_friends))
+
+    for counter in target_common:
+        identifier, count = counter
+        results = results + [identifier]
+
     #   ???
     #   Profit!
 
-    return []
+    return results
 
 #####################################################
 # TASK Q1 (Question 1):
