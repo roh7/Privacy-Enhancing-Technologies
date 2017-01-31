@@ -17,6 +17,7 @@ from collections import namedtuple
 from hashlib import sha512
 from struct import pack, unpack
 from binascii import hexlify
+from pprint import pprint as pp
 # T2
 from petlib.ec import EcGroup
 from petlib.hmac import Hmac, secure_compare
@@ -174,7 +175,7 @@ def mix_client_one_hop(public_key, address, message):
 #####################################################
 # TASK 3 -- Build a n-hop mix client.
 #           Mixes are in a fixed cascade.
-# Status: TODO
+# Status: DONE
 
 
 # This is the type of messages destined for the n-hop mix
@@ -240,15 +241,11 @@ def mix_server_n_hop(private_key, message_list, final=False):
         if not secure_compare(msg.hmacs[0], expected_mac[:20]):
             raise Exception("HMAC check failure")
 
-        # Decrypt the hmacs, address and the message
-        # aes = Cipher("AES-128-CTR") ## TODO REMOVE
-
         # Decrypt hmacs
         new_hmacs = []
         for i, other_mac in enumerate(msg.hmacs[1:]):
             # Ensure the IV is different for each hmac
             iv = pack("H14s", i, b"\x00" * 14)
-
             hmac_plaintext = aes_ctr_enc_dec(hmac_key, iv, other_mac)
             new_hmacs += [hmac_plaintext]
 
@@ -346,7 +343,7 @@ def mix_client_n_hop(public_keys, address, message):
 
         for i in range(len(hmacs)):
             prev_mac = hmacs[i]
-            # use a different iv fpr each hmac
+            # use a different iv for each hmac
             iv = pack("H14s", i, b"\x00" * 14)
 
             # encode hmac plaintext and add to temp list
@@ -411,7 +408,12 @@ def analyze_trace(trace, target_number_of_friends, target=0):
     likely friends of the target.
     """
 
-    # ADD CODE HERE
+    # PLAN:
+    #   Trace when target user (Alice) is in senders list
+    #   Trace when Alice isn't in the senders list
+    #   Check difference in counts for each receiver
+    #   ???
+    #   Profit!
 
     return []
 
