@@ -300,14 +300,16 @@ def mix_client_n_hop(public_keys, address, message):
     client_public_key = private_key * G.generator()
 
     # initialise ciphers
-    address_cipher = None
-    message_cipher = None
+    address_cipher = address_plaintext
+    message_cipher = message_plaintext
+
+    # set blinding factor to 1
+    blinding_factor = Bn(1)
 
     # initalise hmac and blinding key list with first public_key
-    # set blinding factor to 1
     hmacs = []
-    blinding_keys = [public_keys[0]]
-    blinding_factor = Bn(1)
+    blinding_keys = []
+    blinding_keys.append(public_keys[0])
 
     for i in range(1, len(public_keys)):
         # generate shared key and export
@@ -318,8 +320,8 @@ def mix_client_n_hop(public_keys, address, message):
         blinding_factor *= Bn.from_binary(key_material[48:])
 
         # append the calculated blinding key to list
-        public_key = public_keys[1]
-        blinding_keys += [blinding_factor * public_key]
+        public_key = public_keys[i]
+        blinding_keys.append(blinding_factor * public_key)
 
     # reverse list and traverse each hop using blinding factors
     blinding_keys = reversed(blinding_keys)
@@ -335,8 +337,8 @@ def mix_client_n_hop(public_keys, address, message):
 
         # encode both address and message plaintexts
         iv = b"\x00" * 16
-        address_cipher = aes_ctr_enc_dec(address_key, iv, address_plaintext)
-        message_cipher = aes_ctr_enc_dec(message_key, iv, message_plaintext)
+        address_cipher = aes_ctr_enc_dec(address_key, iv, address_cipher)
+        message_cipher = aes_ctr_enc_dec(message_key, iv, message_cipher)
 
         # intiialise a temporary Hmac and list of hmacs
         h = Hmac(b"sha512", hmac_key)
