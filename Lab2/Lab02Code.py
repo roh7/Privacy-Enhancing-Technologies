@@ -16,7 +16,6 @@
 from collections import namedtuple
 from hashlib import sha512
 from struct import pack, unpack
-from binascii import hexlify
 from pprint import pprint
 from copy import copy
 # T2
@@ -379,13 +378,12 @@ def mix_client_n_hop(public_keys, address, message):
 #           Given a set of anonymized traces
 #           the objective is to output an ordered list
 #           of likely `friends` of a target user.
-# Status: TODO
+# Status: DONE
 
 
 def generate_trace(number_of_users, threshold_size, number_of_rounds,
                    targets_friends):
     """ Generate a simulated trace of traffic. """
-    target = 0  # Is this needed?
     others = range(1, number_of_users)
     all_users = range(number_of_users)
 
@@ -427,8 +425,6 @@ def analyze_trace(trace, target_number_of_friends, target=0):
     # Counter to check difference in counts for each receiver
     diff_receivers = Counter()
 
-# POOP
-
     # Make a shallow copy of the trace
     c_trace = copy(trace)
     my_print({"equals": (c_trace == trace), "is": (c_trace is trace)})
@@ -456,12 +452,10 @@ def analyze_trace(trace, target_number_of_friends, target=0):
     results = []
     target_common = list(diff_receivers.most_common(target_number_of_friends))
 
+    # create and return list of most likely friends of the target
     for counter in target_common:
         identifier, count = counter
-        results = results + [identifier]
-
-    #   ???
-    #   Profit!
+        results.append(identifier)
 
     return results
 
