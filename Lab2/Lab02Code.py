@@ -17,7 +17,6 @@ from collections import namedtuple
 from hashlib import sha512
 from struct import pack, unpack
 from pprint import pprint
-from copy import copy
 # T2
 from petlib.ec import EcGroup
 from petlib.hmac import Hmac, secure_compare
@@ -31,7 +30,7 @@ from collections import Counter
 #####################################################
 # GLOBALS
 aes = Cipher("AES-128-CTR")
-to_print = True
+to_print = False  # Disable stdout
 
 
 def my_print(obj, pretty=False):
@@ -425,13 +424,9 @@ def analyze_trace(trace, target_number_of_friends, target=0):
     # Counter to check difference in counts for each receiver
     diff_receivers = Counter()
 
-    # Make a shallow copy of the trace
-    c_trace = copy(trace)
-    my_print({"equals": (c_trace == trace), "is": (c_trace is trace)})
-
     # Count when the receiver was referenced
-    for trace in c_trace:
-        senders, receivers = trace
+    for t in trace:
+        senders, receivers = t
         if target in senders:
             for r in receivers:
                 receivers_target[r] += 1
