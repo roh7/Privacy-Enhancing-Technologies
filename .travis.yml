@@ -6,6 +6,9 @@ cache:
 install:
   - sudo apt-get install toilet
   - pip install petlib
+branches:
+  only:
+    - master
 script:
   - python -m pytest -v Lab*/Lab*Tests.py
 after_failure:

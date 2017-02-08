@@ -460,10 +460,32 @@ def analyze_trace(trace, target_number_of_friends, target=0):
 #       with an IV set to all zeros.
 #   Explain whether this is a security concern and justify
 #       your answer.
-# Status: TODO
+# Status: DONE
 
 
-""" TODO: Your answer HERE """
+"""
+This would cause a serious security concern ** IF ** both the key and
+    the IV were reproduced and used in encryption of another message,
+    and so would cause problems if by some chance, the same private key
+    is reproduced by our pseudo-random number generator. Such a
+    situation would allow an adversary to undermine the secrecy of our
+    implementation.
+As a repeated or constant IV means the probability of a repeated counter
+    value may not be negligible, and we cannot assume that the same
+    private key will never be reproduced, our implementation could
+    therefore be improved; it's not completely insecure but could be
+    better.
+In this case, the IV value was set to zeros ** before ** the encryption
+    was executed, and as our implementation is solely in *using* the
+    OpenSSL algorithm, we can assume the counter value should increment
+    properly, where a counter value is never repeated and is handled by
+    the algorithm, not us - a black box situation.
+The implementation is not fail-safe as we are dependent on the algorithm
+    to 'play safe' for us. We should thus improve our implementation by
+    using a newly generated 16-byte random IV for each message, and
+    ensuring that the private key is produced by a cryptographically
+    secure PRG.
+"""
 
 #####################################################
 # TASK Q2 (Question 2):
@@ -473,7 +495,20 @@ def analyze_trace(trace, target_number_of_friends, target=0):
 #   to receivers?
 # Is the correctness of the result returned dependent
 #   on this background distribution?
+# Status: DONE
 
 
-""" TODO: Your answer HERE """
+"""
+Assumptions made about the background distribution are as follows:
+    1) it occurs in discrete time
+    2) it is independent from the target traffic surrounding our target
+    sender
+    3) it and the target distribution both fulfill the Markov property
+    and create time-homogenous Markov chains where the conditional
+    probability of the subsequent events do not depend on the current
+    time unit.
+Yes, the correctness is dependent on the background distribution and
+    target distribution being independent, and relies on the assumption
+    that they both fulfill the Markov and time-homogenous properties.
+"""
 
