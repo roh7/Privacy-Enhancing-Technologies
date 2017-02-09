@@ -5,19 +5,23 @@
 #         Additive Homomorphic Encryption.
 #
 # Run the tests through:
-# $ py.test -v test_file_name.py
+# $ py.test-2.7 -v Lab03Tests.py
+
+#####################################################
+# Group Members: Rohan Kopparapu, <TODO>
+#####################################################
+
+#####################################################
+# IMPORTS
+# General
+from petlib.ec import EcGroup
 
 #####################################################
 # TASK 1 -- Setup, key derivation, log
 #           Encryption and Decryption
 #
+# Status: TODO
 
-###########################
-# Group Members: TODO
-###########################
-
-
-from petlib.ec import EcGroup
 
 def setup():
     """Generates the Cryptosystem Parameters."""
@@ -27,22 +31,26 @@ def setup():
     o = G.order()
     return (G, g, h, o)
 
-def keyGen(params):
-   """ Generate a private / public key pair """
-   (G, g, h, o) = params
-   
-   # ADD CODE HERE
 
-   return (priv, pub)
+def keyGen(params):
+    """ Generate a private / public key pair """
+    (G, g, h, o) = params
+
+    # ADD CODE HERE
+    priv = None
+    pub = None
+    return (priv, pub)
+
 
 def encrypt(params, pub, m):
     """ Encrypt a message under the public key """
     if not -100 < m < 100:
         raise Exception("Message value to low or high.")
 
-   # ADD CODE HERE
-
+    # ADD CODE HERE
+    c = None
     return c
+
 
 def isCiphertext(params, ciphertext):
     """ Check a ciphertext """
@@ -53,16 +61,19 @@ def isCiphertext(params, ciphertext):
     ret &= G.check_point(b)
     return ret
 
+
 _logh = None
+
+
 def logh(params, hm):
     """ Compute a discrete log, for small number only """
     global _logh
     (G, g, h, o) = params
 
     # Initialize the map of logh
-    if _logh == None:
+    if _logh is None:  # or ==
         _logh = {}
-        for m in range (-1000, 1000):
+        for m in range(-1000, 1000):
             _logh[(m * h)] = m
 
     if hm not in _logh:
@@ -70,59 +81,75 @@ def logh(params, hm):
 
     return _logh[hm]
 
+
 def decrypt(params, priv, ciphertext):
     """ Decrypt a message using the private key """
     assert isCiphertext(params, ciphertext)
-    a , b = ciphertext
+    a, b = ciphertext
 
-   # ADD CODE HERE
+    # ADD CODE HERE
+    hm = None
 
     return logh(params, hm)
 
 #####################################################
 # TASK 2 -- Define homomorphic addition and
 #           multiplication with a public value
-# 
+#
+# Status: TODO
+
 
 def add(params, pub, c1, c2):
-    """ Given two ciphertexts compute the ciphertext of the 
+    """ Given two ciphertexts compute the ciphertext of the
         sum of their plaintexts.
     """
     assert isCiphertext(params, c1)
     assert isCiphertext(params, c2)
 
-   # ADD CODE HERE
+    # ADD CODE HERE
+    c3 = None
 
     return c3
 
+
 def mul(params, pub, c1, alpha):
-    """ Given a ciphertext compute the ciphertext of the 
-        product of the plaintext time alpha """
+    """ Given a ciphertext compute the ciphertext of the
+        product of the plaintext time alpha
+    """
     assert isCiphertext(params, c1)
 
-   # ADD CODE HERE
+    # ADD CODE HERE
+    c3 = None
 
     return c3
 
 #####################################################
 # TASK 3 -- Define Group key derivation & Threshold
-#           decryption. Assume an honest but curious 
+#           decryption. Assume an honest but curious
 #           set of authorities.
+# Status: TODO
+
 
 def groupKey(params, pubKeys=[]):
     """ Generate a group public key from a list of public keys """
     (G, g, h, o) = params
 
-   # ADD CODE HERE
+    # ADD CODE HERE
+    pub = None
 
     return pub
 
+
 def partialDecrypt(params, priv, ciphertext, final=False):
-    """ Given a ciphertext and a private key, perform partial decryption. 
-        If final is True, then return the plaintext. """
+    """
+    Given a ciphertext and a private key, perform partial decryption.
+    If final is True, then return the plaintext.
+    """
     assert isCiphertext(params, ciphertext)
-    
+
     # ADD CODE HERE
+    a1 = None
+    b1 = None
 
     if final:
         return logh(params, b1)
@@ -133,46 +160,63 @@ def partialDecrypt(params, priv, ciphertext, final=False):
 # TASK 4 -- Actively corrupt final authority, derives
 #           a public key with a known private key.
 #
+# Status: TODO
+
 
 def corruptPubKey(params, priv, OtherPubKeys=[]):
-    """ Simulate the operation of a corrupt decryption authority. 
-        Given a set of public keys from other authorities return a
-        public key for the corrupt authority that leads to a group
-        public key corresponding to a private key known to the
-        corrupt authority. """
+    """
+    Simulate the operation of a corrupt decryption authority.
+    Given a set of public keys from other authorities return a
+    public key for the corrupt authority that leads to a group
+    public key corresponding to a private key known to the
+    corrupt authority.
+    """
     (G, g, h, o) = params
-    
-   # ADD CODE HERE
 
+    # ADD CODE HERE
+    pub = None
     return pub
 
 #####################################################
 # TASK 5 -- Implement operations to support a simple
 #           private poll.
 #
+# Status: TODO
+
 
 def encode_vote(params, pub, vote):
-    """ Given a vote 0 or 1 encode the vote as two
-        ciphertexts representing the count of votes for
-        zero and the votes for one."""
+    """
+    Given a vote 0 or 1 encode the vote as two
+    ciphertexts representing the count of votes for
+    zero and the votes for one.
+    """
     assert vote in [0, 1]
 
-   # ADD CODE HERE
-
+    # ADD CODE HERE
+    v0 = None
+    v1 = None
     return (v0, v1)
 
+
 def process_votes(params, pub, encrypted_votes):
-    """ Given a list of encrypted votes tally them
-        to sum votes for zeros and votes for ones. """
+    """
+    Given a list of encrypted votes tally them
+    to sum votes for zeros and votes for ones.
+    """
     assert isinstance(encrypted_votes, list)
-    
-   # ADD CODE HERE
+
+    # ADD CODE HERE
+    tv0 = None
+    tv1 = None
 
     return tv0, tv1
 
+
 def simulate_poll(votes):
-    """ Simulates the full process of encrypting votes,
-        tallying them, and then decrypting the total. """
+    """
+    Simulates the full process of encrypting votes,
+    tallying them, and then decrypting the total.
+    """
 
     # Generate parameters for the crypto-system
     params = setup()
@@ -202,3 +246,4 @@ def simulate_poll(votes):
 
     # Return the plaintext values
     return total_v0, total_v1
+
