@@ -8,7 +8,7 @@
 # $ py.test-2.7 -v Lab03Tests.py
 
 #####################################################
-# Group Members: Rohan Kopparapu, <TODO>
+# Group Members: Rohan Kopparapu, Ayana Matsui
 #####################################################
 
 #####################################################
@@ -20,7 +20,7 @@ from petlib.ec import EcGroup
 # TASK 1 -- Setup, key derivation, log
 #           Encryption and Decryption
 #
-# Status: TODO
+# Status: DONE
 
 
 def setup():
@@ -35,10 +35,8 @@ def setup():
 def keyGen(params):
     """ Generate a private / public key pair """
     (G, g, h, o) = params
-
-    # ADD CODE HERE
-    priv = None
-    pub = None
+    priv = o.random()
+    pub = priv * g
     return (priv, pub)
 
 
@@ -47,9 +45,11 @@ def encrypt(params, pub, m):
     if not -100 < m < 100:
         raise Exception("Message value to low or high.")
 
-    # ADD CODE HERE
-    c = None
-    return c
+    (G, g, h, o) = params
+    priv = o.random()
+    a = priv * g
+    b = priv * pub + m * h
+    return (a, b)
 
 
 def isCiphertext(params, ciphertext):
@@ -86,40 +86,43 @@ def decrypt(params, priv, ciphertext):
     """ Decrypt a message using the private key """
     assert isCiphertext(params, ciphertext)
     a, b = ciphertext
-
-    # ADD CODE HERE
-    hm = None
-
+    a = priv * a
+    hm = b - a
     return logh(params, hm)
 
 #####################################################
 # TASK 2 -- Define homomorphic addition and
 #           multiplication with a public value
 #
-# Status: TODO
+# Status: DONE
 
 
 def add(params, pub, c1, c2):
-    """ Given two ciphertexts compute the ciphertext of the
-        sum of their plaintexts.
+    """
+    Given two ciphertexts compute the ciphertext of the
+    sum of their plaintexts.
     """
     assert isCiphertext(params, c1)
     assert isCiphertext(params, c2)
 
-    # ADD CODE HERE
-    c3 = None
+    (G, g, h, o) = params
+    (m0, k0) = c1
+    (m1, k1) = c2
+    c3 = (m0 + m1, k0 + k1)
 
     return c3
 
 
 def mul(params, pub, c1, alpha):
-    """ Given a ciphertext compute the ciphertext of the
-        product of the plaintext time alpha
+    """
+    Given a ciphertext compute the ciphertext of the
+    product of the plaintext time alpha
     """
     assert isCiphertext(params, c1)
 
-    # ADD CODE HERE
-    c3 = None
+    (G, g, h, o) = params
+    (a0, b0) = c1
+    c3 = (a0.pt_mul(alpha), b0.pt_mul(alpha))
 
     return c3
 
@@ -127,15 +130,17 @@ def mul(params, pub, c1, alpha):
 # TASK 3 -- Define Group key derivation & Threshold
 #           decryption. Assume an honest but curious
 #           set of authorities.
-# Status: TODO
+# Status: DONE
 
 
 def groupKey(params, pubKeys=[]):
     """ Generate a group public key from a list of public keys """
     (G, g, h, o) = params
 
-    # ADD CODE HERE
-    pub = None
+    pub = pubKeys[0]
+
+    for k in pubKeys[1:]:
+        pub += k
 
     return pub
 
@@ -147,20 +152,20 @@ def partialDecrypt(params, priv, ciphertext, final=False):
     """
     assert isCiphertext(params, ciphertext)
 
-    # ADD CODE HERE
-    a1 = None
-    b1 = None
+    (a, b) = ciphertext
+    a1 = priv * a
+    b1 = b - a1
 
     if final:
         return logh(params, b1)
     else:
-        return a1, b1
+        return a, b1
 
 #####################################################
 # TASK 4 -- Actively corrupt final authority, derives
 #           a public key with a known private key.
 #
-# Status: TODO
+# Status: DONE
 
 
 def corruptPubKey(params, priv, OtherPubKeys=[]):
@@ -173,8 +178,15 @@ def corruptPubKey(params, priv, OtherPubKeys=[]):
     """
     (G, g, h, o) = params
 
-    # ADD CODE HERE
-    pub = None
+    pub = OtherPubKeys[0]
+    pub = -pub
+
+    for k in OtherPubKeys[1:]:
+        pub += -k
+
+    own_key = priv * g
+    pub += own_key
+
     return pub
 
 #####################################################
@@ -192,9 +204,8 @@ def encode_vote(params, pub, vote):
     """
     assert vote in [0, 1]
 
-    # ADD CODE HERE
-    v0 = None
-    v1 = None
+    v0 = encrypt(params, pub, (1 - vote))
+    v1 = encrypt(params, pub, vote)
     return (v0, v1)
 
 
@@ -246,4 +257,38 @@ def simulate_poll(votes):
 
     # Return the plaintext values
     return total_v0, total_v1
+
+###########################################################
+# TASK Q1 -- Answer questions regarding your implementation
+#
+# Consider the following game between an adversary A and honest users
+#   H1 and H2:
+# 1) H1 picks 3 plaintext integers Pa, Pb, Pc arbitrarily, and encrypts
+#   them to the public key of H2 using the scheme you defined in TASK 1.
+# 2) H1 provides the ciphertexts Ca, Cb and Cc to H2 who flips a fair
+#   coin b.
+#    In case b=0 then H2 homomorphically computes C as the encryption
+#       of Pa plus Pb.
+#    In case b=1 then H2 homomorphically computes C as the encryption
+#       of Pb plus Pc.
+# 3) H2 provides the adversary A, with Ca, Cb, Cc and C.
+#
+# What is the advantage of the adversary in guessing b given your
+#   implementation of Homomorphic addition? What are the security
+#   implications of this?
+
+
+""" Your Answer here """
+
+###########################################################
+# TASK Q2 -- Answer questions regarding your implementation
+#
+# Given your implementation of the private poll in TASK 5, how
+# would a malicious user implement encode_vote to (a) distrupt the
+# poll so that it yields no result, or (b) manipulate the poll so
+# that it yields an arbitrary result. Can those malicious actions
+# be detected given your implementation?
+
+
+""" Your Answer here """
 
