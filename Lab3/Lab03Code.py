@@ -215,10 +215,11 @@ def process_votes(params, pub, encrypted_votes):
     to sum votes for zeros and votes for ones.
     """
     assert isinstance(encrypted_votes, list)
+    tv0, tv1 = encrypted_votes[0]
 
-    # ADD CODE HERE
-    tv0 = None
-    tv1 = None
+    for (i, j) in encrypted_votes[1:]:
+        tv0 = add(params, pub, i, tv0)
+        tv1 = add(params, pub, j, tv1)
 
     return tv0, tv1
 
