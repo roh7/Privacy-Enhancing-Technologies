@@ -193,7 +193,7 @@ def corruptPubKey(params, priv, OtherPubKeys=[]):
 # TASK 5 -- Implement operations to support a simple
 #           private poll.
 #
-# Status: TODO
+# Status: DONE
 
 
 def encode_vote(params, pub, vote):
