@@ -279,7 +279,18 @@ def simulate_poll(votes):
 #   implications of this?
 
 
-""" Your Answer here """
+"""
+The adversary has an almost certain advantage as to guessing b, assuming that he has the
+    ability to do homomorphic operation. Our implementation is simply an addition of the
+    two ciphertexts.
+If the adversary can perform C-Cb, then they can compare the result with Ca and Cc. The
+    security implication of this is that it is easy to apply and de-apply homomorphic
+    operations if the original equations and values are know.
+However, if the equations are complex enough, or the adversary does not know them, they
+    cannot find the contents of result(C).
+At the same time, the notion of being able to guess b does not imply anything about being
+    able to guess the plaintext from our ciphertext.
+"""
 
 ###########################################################
 # TASK Q2 -- Answer questions regarding your implementation
@@ -291,5 +302,19 @@ def simulate_poll(votes):
 # be detected given your implementation?
 
 
-""" Your Answer here """
+"""
+a) The adversary could disrupt (i.e. cause the system to show illogical votes) by simply
+    modifying the number of votes in the encode_vote() method. Since we are encrypting
+    and counting the votes, they can change the code and increase the vote count,
+    resulting in an unusable outcome.
+b) While we couldn\'t think of a way to manipulate in a completely arbitrary way, the
+    adversary could partially affect the result. Let us assume that the adversary wants
+    an 85:15, v0 to v1 ratio, they can implement a random of 1-100, where if the value is
+    equal to or under 85, the vote goes to v0, else goes to v1. The adversary could get
+    unlucky if the number of votes is small, but could work if there are many votes.
+   Alternatively, the adversary could generate private keys and make up votes to
+    manipulate the votes and get the arbitrary result they wish. Since the implementation
+    does not verify user identities, it is possible to vote multiple times with multiple
+    keys.
+"""
 
