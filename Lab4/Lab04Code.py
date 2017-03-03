@@ -46,7 +46,7 @@ def to_challenge(elements):
 # TASK 1 -- Prove knowledge of a DH public key's
 #           secret.
 #
-# Status: TODO
+# Status: DONE
 
 
 def proveKey(params, priv, pub):
@@ -60,9 +60,13 @@ def proveKey(params, priv, pub):
     """
     (G, g, hs, o) = params
 
-    # YOUR CODE HERE:
-    c = None
-    r = None
+    # generate random key
+    w = o.random()
+    W = w * g
+
+    # compute challenge and response
+    c = to_challenge([g, W])
+    r = (w - (c * priv)) % o
 
     return (c, r)
 
