@@ -85,7 +85,7 @@ def verifyKey(params, pub, proof):
 # TASK 2 -- Prove knowledge of a Discrete Log
 #           representation.
 #
-# Status: TODO
+# Status: DONE
 
 
 def commit(params, secrets):
@@ -103,20 +103,30 @@ def commit(params, secrets):
 
 
 def proveCommitment(params, C, r, secrets):
-    """
-    Prove knowledge of the secrets within a commitment, as well as the
-            opening of the commitment.
+    """ Prove knowledge of the secrets within a commitment,
+        as well as the opening of the commitment.
 
-    Args: C (the commitment), r (the opening of the
-            commitment), and secrets (a list of secrets).
-    Returns: a challenge (c) and a list of responses.
+        Args: C (the commitment), r (the opening of the
+                commitment), and secrets (a list of secrets).
+        Returns: a challenge (c) and a list of responses.
     """
     (G, g, (h0, h1, h2, h3), o) = params
     x0, x1, x2, x3 = secrets
 
-    # YOUR CODE HERE:
-    c = None
-    responses = None
+    # compute 5 random elements for each secret and opening commitment
+    ws = [o.random() for i in range(5)]
+    W = ws[0] * g + ws[1] * h0 + ws[2] * h1 + ws[3] * h2 + ws[4] * h3
+
+    # compute challenge
+    c = to_challenge([g, h0, h1, h2, h3, W])
+
+    # compute responses for opening commitment and then for each secret
+    r1 = (ws[1] - (c * x0)) % o
+    r2 = (ws[2] - (c * x1)) % o
+    r3 = (ws[3] - (c * x2)) % o
+    r4 = (ws[4] - (c * x3)) % o
+    rr = (ws[0] - (c * r)) % o
+    responses = (r1, r2, r3, r4, rr)
 
     return (c, responses)
 
@@ -137,7 +147,7 @@ def verifyCommitments(params, C, proof):
 #####################################################
 # TASK 3 -- Prove Equality of discrete logarithms.
 #
-# Status: TODO
+# Status: DONE
 
 
 def gen2Keys(params):
@@ -175,16 +185,18 @@ def verifyDLEquality(params, K, L, proof):
     (G, g, (h0, h1, h2, h3), o) = params
     c, r = proof
 
-    # YOUR CODE HERE:
-    something = None
+    # verify proof of equality of 2 discrete logs
+    k_prime = (c * K) + (r * g)
+    l_prime = (c * L) + (r * h0)
+    condition = to_challenge([g, h0, k_prime, l_prime]) == c
 
-    return something  # YOUR RETURN HERE
+    return condition
 
 #####################################################
 # TASK 4 -- Prove correct encryption and knowledge of
 #           a plaintext.
 #
-# Status: TODO
+# Status: TODO - I have no idea what I'm doing
 
 
 def encrypt(params, pub, m):
@@ -206,10 +218,18 @@ def proveEnc(params, pub, Ciphertext, k, m):
     (G, g, (h0, h1, h2, h3), o) = params
     a, b = Ciphertext
 
-    # YOUR CODE HERE:
-    c = None
-    rk = None
-    rm = None
+    # generate random elements for g and message
+    wk = o.random()
+    wm = o.random()
+    w_g = wk * g
+    w_m = wk * pub + wm * h0
+
+    # compute challenge
+    c = to_challenge([g, h0, pub, a, b, w_g, w_m])
+
+    # responses for k and message
+    rk = (wk - c * k) % o
+    rm = (wm - c * m) & o
 
     return (c, (rk, rm))
 
@@ -222,15 +242,16 @@ def verifyEnc(params, pub, Ciphertext, proof):
     a, b = Ciphertext
     (c, (rk, rm)) = proof
 
-    # YOUR CODE HERE:
-    something = None
+    w1_prime = rk * g + c * a
+    w2_prime = rk * pub * rm * h0 + c * b
+    condition = to_challenge([g, h0, pub, a, b, w1_prime, w2_prime]) == c
 
-    return something  # YOUR RETURN HERE
+    return condition
 
 #####################################################
 # TASK 5 -- Prove a linear relation
 #
-# Status: TODO
+# Status: DONE
 
 
 def relation(params, x1):
@@ -248,25 +269,33 @@ def relation(params, x1):
 
 
 def prove_x0eq10x1plus20(params, C, x0, x1, r):
-    """
-    Prove C is a commitment to x0 and x1 and that x0 = 10 x1 + 20.
-    """
+    """ Prove C is a commitment to x0 and x1 and that x0 = 10 x1 + 20. """
     (G, g, (h0, h1, h2, h3), o) = params
 
-    # YOUR CODE HERE:
-    something = None
+    # generate random elements for opening commitment and x1
+    w_r1 = o.random()
+    w_x1 = o.random()
+    W = w_r1 * g + w_x1 * h1 + w_x1 * (10 * h0)
 
-    return something  # YOUR RETURN HERE
+    # compute challenge
+    c = to_challenge([g, h0, h1, W])
+
+    # compute responses for commitment and x1
+    r_r1 = (w_r1 - (c * r)) % o
+    r_x1 = (w_x1 - (c * x1)) % o
+
+    return (c, (r_r1, r_x1))
 
 
 def verify_x0eq10x1plus20(params, C, proof):
     """ Verify that proof of knowledge of C and x0 = 10 x1 + 20. """
     (G, g, (h0, h1, h2, h3), o) = params
+    c, (r_r1, r_x1) = proof
 
-    # YOUR CODE HERE:
-    something = None
+    W_prime = r_r1 * g + r_x1 * h1 + r_x1 * (10 * h0) + c * (C - 20 * h0)
+    condition = to_challenge([g, h0, h1, W_prime]) == c
 
-    return something  # YOUR RETURN HERE
+    return condition
 
 #####################################################
 # TASK 6 -- (OPTIONAL) Prove that a ciphertext is either 0 or 1
