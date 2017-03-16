@@ -196,7 +196,7 @@ def verifyDLEquality(params, K, L, proof):
 # TASK 4 -- Prove correct encryption and knowledge of
 #           a plaintext.
 #
-# Status: TODO - I have no idea what I'm doing
+# Status: DONE
 
 
 def encrypt(params, pub, m):
@@ -221,15 +221,15 @@ def proveEnc(params, pub, Ciphertext, k, m):
     # generate random elements for g and message
     wk = o.random()
     wm = o.random()
-    w_g = wk * g
-    w_m = wk * pub + wm * h0
+    wa = wk * g
+    wb = wm * h0 + wk * pub
 
     # compute challenge
-    c = to_challenge([g, h0, pub, a, b, w_g, w_m])
+    c = to_challenge([g, h0, pub, a, b, wa, wb])
 
     # responses for k and message
-    rk = (wk - c * k) % o
-    rm = (wm - c * m) & o
+    rk = (wk - (c * k)) % o
+    rm = (wm - (c * m)) % o
 
     return (c, (rk, rm))
 
@@ -243,7 +243,7 @@ def verifyEnc(params, pub, Ciphertext, proof):
     (c, (rk, rm)) = proof
 
     w1_prime = rk * g + c * a
-    w2_prime = rk * pub * rm * h0 + c * b
+    w2_prime = rk * pub + rm * h0 + c * b
     condition = to_challenge([g, h0, pub, a, b, w1_prime, w2_prime]) == c
 
     return condition
