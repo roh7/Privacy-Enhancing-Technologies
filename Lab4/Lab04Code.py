@@ -17,8 +17,6 @@ from petlib.ec import EcGroup
 from petlib.bn import Bn
 from hashlib import sha256
 from binascii import hexlify
-# Q2
-import pytest
 
 
 def setup():
@@ -350,9 +348,18 @@ def test_bin_incorrect():
 # Does "plausible deniability" hold against a dishonest verifier
 #       that deviates from the Schnorr identification protocol?
 # Justify your answer by describing what a dishonest verifier may do.
+#
+# Status: DONE
 
 
-""" TODO: Your answer here. """
+"""
+In order to interact with the protocol, a verifier may send a carefully
+    crafted challenge. The non-interactive Schnorr protocol does not
+    provide plausible deniability since it cannot be simulated, due to
+    causality.
+Hence, the verifier can simply send a challenge which is the hash of W
+    and the public key, thereby turning the protocol non-interactive.
+"""
 
 #####################################################
 # TASK Q2 - Answer the following question:
@@ -364,9 +371,18 @@ def test_bin_incorrect():
 # given the output of this function, convinced of?
 #
 # Hint: Look at "test_prove_something" too.
+#
+# Status: DONE
 
 
-""" TODO: Your answer here. """
+"""
+The prover must prove that they know secret x or y. The verifier will
+    not know which of the two secrets is simulated but can be sure that
+    only one of them.
+Simulating both secrets would mean that W_KY would have a different
+    value on the side of the verifier, causing the challenge to hash to
+    a different value, therefore c1 + c2 != c
+"""
 
 
 def prove_something(params, KX, KY, y):
