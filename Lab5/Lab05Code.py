@@ -449,5 +449,36 @@ def credential_show_verify_pseudonym(params, issuer_params, pseudonym, tag,
 # Status: DONE
 
 
-""" Your answer here. """
+"""
+First, the user can generate a keypair, establishing a pseudonym
+    identity and related attributes. This includes a proof of the user
+    knowing the correct secret key, which can be verified. The network
+    will only accept it if verification passes. Then, the issuing party
+    authenticates the user, providing them with a credential and proof
+    of correct issuing. Following that, the user can generate a unique
+    pseudonym for each payment, which can be verified by recepients. The
+    user can use a ZKP to prove possession of the credential, and the
+    previously accepted commitment + random value.
+For example:
+Alice goes to the bank and gives it 1 coin which is characterized by a
+    unique sequence number, along with the encryption of a random number
+    that Alice has created. The bank creates an algebraic Mac of these
+    unique sequence and random number, and a proof that the Mac is
+    correctly formed, and gives it to the user.
+This serves as the credential for the user to spend the coin. After the
+    user checks the validity of the Mac he generates a pseudonym, as
+    the pseudonym = random number * hash (unique sequence number) and a
+    proof that is well formed, and gives it to the bank.
+The bank stores in its database this pseudonym and the unique sequence
+    number of the coin. We note that pseudonyms are unique for every
+    coin. Assume now Alice wants to send this coin to Bob.
+    She reblinds the Mac and sends it, along with the pseudonym and a
+    proof that the blinded Mac and the pseudonym are well formed.
+Then Bob asks the bank to verify the validity of these proofs, and if
+    the verification succeeds, the bank gives one coin to Bob and
+    deletes from its database the entry associated with this pseudonym,
+    in order to prevent double spending.
+This scheme also provides privacy, since the Mac is reblinded and
+    pseudonyms are unlinkable between them.
+"""
 
