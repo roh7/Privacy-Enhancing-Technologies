@@ -1,8 +1,7 @@
 # COMPM067
 ## Privacy Enhancing Technologies
 
-
-[![Build Status](https://travis-ci.com/roh7/Privacy-Enhancing-Technologies.svg?token=rsKdRd3Wgss3SZB58GGq&branch=master)](https://travis-ci.com/roh7/Privacy-Enhancing-Technologies)
+[![Build Status](https://travis-ci.com/roh7/Privacy-Enhancing-Technologies.svg?token=rsKdRd3Wgss3SZB58GGq&branch=master)](https://travis-ci.com/roh7/Privacy-Enhancing-Technologies) (**_yay_**)
 
 ### To run tests locally, issue:
 ```sh
@@ -18,3 +17,5 @@ python -m pytest -v Lab*/Lab*Tests.py
 - __Lab5__ - Rohan Kopparapu, Anastasia Grigoropoulou
 
 #### For more information, see [gdanezis/PET-Exercises](https://github.com/gdanezis/PET-Exercises)
+
+> Phew, finally done. (_use at own risk_)
